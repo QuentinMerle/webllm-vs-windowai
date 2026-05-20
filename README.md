@@ -17,8 +17,11 @@ It powers the technical article: *Client-Side AI: The Next Era of Consumer E-Com
 ## 🚀 Getting Started
 
 ### Prerequisites
-- **Node.js** (v18 or higher)
-- **A WebGPU compatible browser** (Chrome / Edge) for WebLLM.
+- **Node.js v20 LTS** — This project uses a `.nvmrc` file. If you use [nvm](https://github.com/nvm-sh/nvm), simply run:
+  ```bash
+  nvm install && nvm use
+  ```
+- **A WebGPU-compatible browser** (Chrome 113+ / Edge) for the WebLLM engine.
 
 ### Installation
 
