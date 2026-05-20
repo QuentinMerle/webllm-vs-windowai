@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-  base: './', // Ensures relative paths for GitHub Pages deployment
+  base: '/webllm-vs-windowai/', // Repository name for GitHub Pages deployment
 })
