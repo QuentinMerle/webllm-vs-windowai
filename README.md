@@ -2,7 +2,7 @@
 
 This sandbox is a technical Proof of Concept (POC) demonstrating how to implement a fully local, privacy-first conversational e-commerce search engine using **Small Language Models (SLMs)** directly in the browser. 
 
-It powers the technical article: *L'IA "service client" personnalisé, futur de l'IA grand public ?*
+It powers the technical article: *Client-Side AI: The Next Era of Consumer E-Commerce?*
 
 ## 🌟 Features
 
