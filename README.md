@@ -43,11 +43,10 @@ It powers the technical article: *Client-Side AI: The Next Era of Consumer E-Com
 
 ## 🧪 Testing `window.ai` (Chrome Experimental)
 
-To test the `window.ai` engine, you must use Chrome (v127+ or Canary) and enable the following experimental flags:
-1. Go to `chrome://flags`
-2. Enable **Prompt API for Gemini Nano**
-3. Enable **Optimization Guide On Device Model**
-4. Restart Chrome.
+To test the Native AI engine, you must use a recent version of Chrome (v127+) and complete this specific 3-step setup:
+1. Go to `chrome://flags` and enable **Prompt API for Gemini Nano**.
+2. Still in flags, set **Optimization Guide On Device Model** to **Enabled BypassPerfRequirement** (crucial for it to work on all hardware).
+3. Relaunch Chrome, then go to `chrome://components`. Find **Optimization Guide On Device Model** and click "Check for update". Wait for the 1.5GB model to finish downloading.
 
 ## 🧠 Architecture Overview
 
