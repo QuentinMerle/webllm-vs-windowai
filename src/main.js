@@ -198,6 +198,14 @@ Schema:
       }
       return true;
     });
+
+    // If the query yields no results (e.g. off-topic like "Batman"),
+    // reset to the full catalog instead of showing an empty grid.
+    if (filtered.length === 0) {
+      renderProducts(CATALOG);
+      return;
+    }
+
     renderProducts(filtered);
   }
 
