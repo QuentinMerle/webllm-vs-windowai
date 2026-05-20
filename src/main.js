@@ -41,18 +41,31 @@ document.addEventListener('DOMContentLoaded', () => {
     products.forEach(p => {
       const card = document.createElement('div');
       card.className = 'bg-[#f3f3f3] relative group border-b border-r border-gray-200';
-      card.innerHTML = `
-        <div class="aspect-[4/5] w-full overflow-hidden flex items-center justify-center p-8">
-          <img src="${p.img}" alt="${p.name}" class="w-full h-full object-cover object-center transform group-hover:scale-105 transition duration-500" loading="lazy">
-        </div>
-        <div class="p-6 bg-white flex flex-col gap-1">
-          <div class="flex justify-between items-start">
-            <h3 class="font-medium text-[15px] leading-tight text-gray-900">${p.name}</h3>
-          </div>
-          <p class="text-[12px] text-gray-500">${p.category}</p>
-          <p class="text-[14px] font-medium mt-1 text-gray-900">${p.price}</p>
-        </div>
-      `;
+
+      // Build card safely with textContent to prevent XSS
+      const imgWrapper = document.createElement('div');
+      imgWrapper.className = 'aspect-[4/5] w-full overflow-hidden flex items-center justify-center p-8';
+      const img = document.createElement('img');
+      img.src = p.img;
+      img.alt = p.name;
+      img.className = 'w-full h-full object-cover object-center transform group-hover:scale-105 transition duration-500';
+      img.loading = 'lazy';
+      imgWrapper.appendChild(img);
+
+      const info = document.createElement('div');
+      info.className = 'p-6 bg-white flex flex-col gap-1';
+      const name = document.createElement('h3');
+      name.className = 'font-medium text-[15px] leading-tight text-gray-900';
+      name.textContent = p.name;
+      const category = document.createElement('p');
+      category.className = 'text-[12px] text-gray-500';
+      category.textContent = p.category;
+      const price = document.createElement('p');
+      price.className = 'text-[14px] font-medium mt-1 text-gray-900';
+      price.textContent = p.price;
+      info.append(name, category, price);
+
+      card.append(imgWrapper, info);
       productGrid.appendChild(card);
     });
   }
@@ -133,12 +146,14 @@ Schema:
     const selected = engineSelect.value;
     
     if (selected === 'windowai') {
-      if (window.ai && (await window.ai.canCreateTextSession) !== undefined) {
-        const caps = await window.ai.canCreateTextSession();
-        if (caps !== 'no') {
-          engineStatus.className = 'w-2 h-2 rounded-full bg-green-500';
-          return;
-        }
+      if (window.ai && typeof window.ai.canCreateTextSession === 'function') {
+        try {
+          const caps = await window.ai.canCreateTextSession();
+          if (caps !== 'no') {
+            engineStatus.className = 'w-2 h-2 rounded-full bg-green-500';
+            return;
+          }
+        } catch (e) { /* API not ready */ }
       }
       engineStatus.className = 'w-2 h-2 rounded-full bg-red-500';
     } else {
@@ -177,7 +192,7 @@ Schema:
         const keywords = criteria.keyword.toLowerCase().split(/\s+/);
         const searchStr = `${p.name} ${p.category} ${p.color} ${p.style} ${p.tags.join(' ')}`.toLowerCase();
         for (const kw of keywords) {
-          if (["shoe", "shoes", "sneaker", "sneakers", "pair", "red"].includes(kw)) continue; // ignore generic or redundant words
+          if (["shoe", "shoes", "sneaker", "sneakers", "pair"].includes(kw)) continue; // ignore generic stop-words
           if (!searchStr.includes(kw)) return false;
         }
       }
@@ -236,13 +251,7 @@ Schema:
   });
 
   function handleAIResponse(rawResponse, originalInput) {
-    let userMsg = "I updated the product list for you!";
-    
-    if (rawResponse.includes('|||')) {
-      const parts = rawResponse.split('|||');
-      userMsg = parts[1] && parts[1].trim() !== '' ? parts[1].trim() : userMsg;
-      rawResponse = parts[0];
-    }
+    const userMsg = "I updated the product list for you!";
 
     let parsed = extractJSON(rawResponse);
 
