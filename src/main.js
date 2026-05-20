@@ -146,10 +146,16 @@ Schema:
     const selected = engineSelect.value;
     
     if (selected === 'windowai') {
-      if (window.ai && typeof window.ai.canCreateTextSession === 'function') {
+      const aiAPI = (globalThis.ai && globalThis.ai.languageModel) || window.ai;
+      if (aiAPI) {
         try {
-          const caps = await window.ai.canCreateTextSession();
-          if (caps !== 'no') {
+          let caps;
+          if (aiAPI.capabilities) {
+            caps = (await aiAPI.capabilities()).available;
+          } else if (typeof aiAPI.canCreateTextSession === 'function') {
+            caps = await aiAPI.canCreateTextSession();
+          }
+          if (caps && caps !== 'no') {
             engineStatus.className = 'w-2 h-2 rounded-full bg-green-500';
             return;
           }
@@ -222,11 +228,13 @@ Schema:
     
     try {
       if (engine === 'windowai') {
-        if (!window.ai) {
-          throw new Error("window.ai is not enabled on this browser. Enable the Chrome flags.");
+        const aiAPI = (globalThis.ai && globalThis.ai.languageModel) || window.ai;
+        if (!aiAPI) {
+          throw new Error("Native AI API not found. Please enable the Chrome flags (#prompt-api-for-gemini-nano).");
         }
-        showLoading("window.ai thinking...");
-        const session = await window.ai.createTextSession({ systemPrompt });
+        showLoading("Native AI thinking...");
+        
+        const session = aiAPI.create ? await aiAPI.create({ systemPrompt }) : await aiAPI.createTextSession({ systemPrompt });
         const result = await session.prompt(text);
         handleAIResponse(result, text);
         session.destroy();
