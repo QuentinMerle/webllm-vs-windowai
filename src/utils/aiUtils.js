@@ -19,31 +19,60 @@ export function extractJSON(text) {
   return null;
 }
 
+// Fallback vocabulary for when the 1B model misses extraction
+const KNOWN_COLORS = ["red", "black", "white", "blue", "green", "yellow", "pink", "brown", "grey", "gray", "orange", "purple"];
+const KNOWN_STYLES = ["skate shoes", "slip-ons", "slip-on", "mid-top", "high-top", "eco"];
+
 /**
- * GUARDRAIL: Anti-Hallucination
- * Small Language Models (1B) sometimes hallucinate attributes.
- * We verify that the extracted attributes actually appear in the original request.
+ * GUARDRAIL: Anti-Hallucination + Fallback Extraction
+ *
+ * Two-pass strategy:
+ * 1. Suppress hallucinated attributes (values not present in the user's input).
+ * 2. Recover missed extractions using deterministic keyword scanning as fallback.
+ *
+ * Small Language Models (1B params) are prone to both hallucinating values AND
+ * missing obvious ones (e.g. returning "null" for color in "red shoes").
+ * This function compensates for both failure modes.
  */
 export function validateAIIntent(parsed, originalInput) {
   if (!parsed || !originalInput) return parsed;
   
   const inputLower = originalInput.toLowerCase();
-  
-  // Validate Color
-  if (parsed.color && typeof parsed.color === 'string' && parsed.color !== 'null') {
-    if (!inputLower.includes(parsed.color.toLowerCase())) {
-      parsed.color = null; // Hallucination detected, suppress it
-    }
+
+  // --- PASS 1: Suppress hallucinations ---
+
+  // Normalize string "null" to actual null
+  if (parsed.color === 'null') parsed.color = null;
+  if (parsed.style === 'null') parsed.style = null;
+  if (parsed.keyword === 'null') parsed.keyword = null;
+
+  // Validate Color: suppress if the extracted value isn't in the original input
+  if (parsed.color && !inputLower.includes(parsed.color.toLowerCase())) {
+    parsed.color = null;
   }
   
-  // Validate Style
-  if (parsed.style && typeof parsed.style === 'string' && parsed.style !== 'null') {
+  // Validate Style: suppress if the extracted value isn't in the original input
+  if (parsed.style) {
     const styleStr = parsed.style.toLowerCase().replace('-', '');
     const inputStr = inputLower.replace('-', '');
     if (!inputStr.includes(styleStr) && !inputLower.includes(parsed.style.toLowerCase())) {
-      parsed.style = null; // Hallucination detected
+      parsed.style = null;
     }
   }
-  
+
+  // --- PASS 2: Fallback extraction (recover missed values) ---
+
+  // If the model returned no color, scan the input directly
+  if (!parsed.color) {
+    const found = KNOWN_COLORS.find(c => inputLower.includes(c));
+    if (found) parsed.color = found;
+  }
+
+  // If the model returned no style, scan the input directly
+  if (!parsed.style) {
+    const found = KNOWN_STYLES.find(s => inputLower.includes(s));
+    if (found) parsed.style = found === 'slip-on' ? 'slip-ons' : found;
+  }
+
   return parsed;
 }
