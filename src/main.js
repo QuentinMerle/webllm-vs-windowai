@@ -203,10 +203,11 @@ Schema:
     // reset to the full catalog instead of showing an empty grid.
     if (filtered.length === 0) {
       renderProducts(CATALOG);
-      return;
+      return false; // Indicates no match found
     }
 
     renderProducts(filtered);
+    return true; // Indicates matches were found
   }
 
   chatForm.addEventListener('submit', async (e) => {
@@ -259,16 +260,19 @@ Schema:
   });
 
   function handleAIResponse(rawResponse, originalInput) {
-    const userMsg = "I updated the product list for you!";
-
     let parsed = extractJSON(rawResponse);
 
     if (parsed) {
       parsed = validateAIIntent(parsed, originalInput);
 
       jsonOutput.textContent = JSON.stringify(parsed, null, 2);
-      applyFilters(parsed);
-      addMessage(userMsg);
+      const foundMatches = applyFilters(parsed);
+      
+      if (foundMatches) {
+        addMessage("I updated the product list for you!");
+      } else {
+        addMessage("Hmm, I couldn't find anything matching your search.");
+      }
     } else {
       console.error("JSON Parse Error. Raw string:", rawResponse);
       jsonOutput.textContent = `Parse Error. \n\nRaw string:\n${rawResponse}`;
