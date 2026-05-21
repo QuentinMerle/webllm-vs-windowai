@@ -2,7 +2,7 @@
 
 This sandbox is a technical Proof of Concept (POC) demonstrating how to implement a fully local, privacy-first conversational e-commerce search engine using **Small Language Models (SLMs)** directly in the browser. 
 
-It powers the technical article: *Client-Side AI: The Next Era of Consumer E-Commerce?*
+It powers the technical article: [*Client-Side AI: The Next Era of Consumer E-Commerce?*](https://dev.to/quentin_merle/client-side-ai-the-next-era-of-consumer-e-commerce-535f)
 
 ## 🌟 Features
 
@@ -58,7 +58,7 @@ The codebase is structured to be as clear and didactic as possible:
 - `index.html`: The markup, including the Dev Mode overlay.
 
 ## 📝 Read the Article
-This repo was created to illustrate the challenges and solutions of using 1B parameter models for deterministic tasks. Read the full breakdown of Prompt Engineering, Zero-Shot vs Few-Shot, and Cross-Contamination in the [associated DEV.to article (Link coming soon)](#).
+This repo was created to illustrate the challenges and solutions of using 1B parameter models for deterministic tasks. Read the full breakdown of Prompt Engineering, Zero-Shot vs Few-Shot, and Cross-Contamination in the [associated DEV.to article](https://dev.to/quentin_merle/client-side-ai-the-next-era-of-consumer-e-commerce-535f).
 
 ## License
 MIT
