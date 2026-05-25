@@ -7,8 +7,8 @@ It powers the technical article: [*Client-Side AI: The Next Era of Consumer E-Co
 ## 🌟 Features
 
 - **Dual-Engine Architecture:** Switch seamlessly between two local AI execution environments:
-  - **WebLLM (Llama 3.2 1B):** Uses WebGPU to run a quantized Llama model locally.
-  - **window.ai (Gemini Nano):** Uses Chrome's experimental built-in native AI API.
+  - [**@mlc-ai/web-llm**](https://github.com/mlc-ai/web-llm) **(Llama 3.2 1B):** Uses WebGPU to run a quantized Llama model locally.
+  - [**window.ai**](https://github.com/WICG/window.ai) **(Gemini Nano):** Uses Chrome's experimental built-in native AI API.
 - **Zero-Shot JSON Extraction:** Turns natural language queries ("Do you have red skate shoes?") into a strict, parsable JSON intent object.
 - **Input Guardrails:** A deterministic JavaScript middleware that intercepts and sanitizes the LLM's output to prevent AI hallucinations (e.g. making sure the extracted color was actually mentioned by the user).
 - **Vans-Inspired UI:** A sleek, fully responsive e-commerce layout built with Tailwind CSS.
